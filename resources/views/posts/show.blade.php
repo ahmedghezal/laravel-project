@@ -31,13 +31,55 @@
                         @endif
 
                         @if ((auth()->id() === $post->user_id && auth()->user()->can('delete own posts')) || auth()->user()->can('delete any posts'))
-                            <form method="POST" action="{{ route('posts.destroy', $post) }}">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="inline-flex rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50">
+                            <div x-data="{ open: false }">
+                                <button type="button" @click="open = true" class="inline-flex rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50">
                                     Delete post
                                 </button>
-                            </form>
+
+                                <div x-show="open" class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50" x-cloak>
+                                    <div x-show="open" class="fixed inset-0 transform transition-all" @click="open = false">
+                                        <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                                    </div>
+
+                                    <div x-show="open" class="mb-6 bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:w-full sm:max-w-2xl sm:mx-auto">
+                                        <div class="p-6">
+                                            <div class="flex items-center justify-between mb-4">
+                                                <h2 class="text-lg font-medium text-gray-900">Delete Post</h2>
+                                                <button type="button" @click="open = false" class="text-gray-400 hover:text-gray-600">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="mb-6">
+                                                <div class="flex items-center gap-4 p-4 bg-red-50 rounded-lg mb-4">
+                                                    <div class="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                                                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p class="font-medium text-red-800">Are you sure you want to delete "{{ $post->title }}"?</p>
+                                                        <p class="text-sm text-red-600">Once deleted, this post and all its comments will be permanently removed.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <form method="post" action="{{ route('posts.destroy', $post) }}" class="flex justify-end gap-3">
+                                                @csrf
+                                                @method('delete')
+                                                <x-secondary-button @click="open = false" type="button">
+                                                    Cancel
+                                                </x-secondary-button>
+                                                <x-danger-button>
+                                                    Delete Post
+                                                </x-danger-button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
                     </div>
                 @endif
@@ -87,13 +129,55 @@
                                     </div>
 
                                     @if (auth()->id() === $comment->user_id || auth()->user()->can('delete any comments'))
-                                        <form method="POST" action="{{ route('comments.destroy', $comment) }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-sm font-medium text-red-600 hover:text-red-500">
+                                        <div x-data="{ open: false }">
+                                            <button type="button" @click="open = true" class="text-sm font-medium text-red-600 hover:text-red-500">
                                                 Delete
                                             </button>
-                                        </form>
+
+                                            <div x-show="open" class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50" x-cloak>
+                                                <div x-show="open" class="fixed inset-0 transform transition-all" @click="open = false">
+                                                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                                                </div>
+
+                                                <div x-show="open" class="mb-6 bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:w-full sm:max-w-2xl sm:mx-auto">
+                                                    <div class="p-6">
+                                                        <div class="flex items-center justify-between mb-4">
+                                                            <h2 class="text-lg font-medium text-gray-900">Delete Comment</h2>
+                                                            <button type="button" @click="open = false" class="text-gray-400 hover:text-gray-600">
+                                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                        
+                                                        <div class="mb-6">
+                                                            <div class="flex items-center gap-4 p-4 bg-red-50 rounded-lg mb-4">
+                                                                <div class="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                                                                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                                                    </svg>
+                                                                </div>
+                                                                <div>
+                                                                    <p class="font-medium text-red-800">Are you sure you want to delete this comment?</p>
+                                                                    <p class="text-sm text-red-600">Once deleted, this comment will be permanently removed.</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <form method="post" action="{{ route('comments.destroy', $comment) }}" class="flex justify-end gap-3">
+                                                            @csrf
+                                                            @method('delete')
+                                                            <x-secondary-button @click="open = false" type="button">
+                                                                Cancel
+                                                            </x-secondary-button>
+                                                            <x-danger-button>
+                                                                Delete Comment
+                                                            </x-danger-button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @endif
                                 </div>
 

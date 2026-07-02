@@ -21,6 +21,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::delete('/posts/bulk-destroy', [PostController::class, 'bulkDestroy'])->name('posts.bulk-destroy');
     Route::resource('posts', PostController::class);
     Route::post('posts/{post}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
@@ -30,8 +31,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::middleware('can:manage roles')->group(function () {
-        Route::get('/admin/users', [UserRoleController::class, 'index'])->name('admin.users.index');
+        Route::delete('/admin/users/bulk-destroy', [UserRoleController::class, 'bulkDestroy'])->name('admin.users.bulk-destroy');
+        Route::delete('/admin/roles/bulk-destroy', [\App\Http\Controllers\Admin\RoleController::class, 'bulkDestroy'])->name('admin.roles.bulk-destroy');
+        Route::resource('/admin/users', UserRoleController::class)->names('admin.users')->only(['index', 'create', 'store', 'destroy']);
         Route::put('/admin/users/{user}/role', [UserRoleController::class, 'update'])->name('admin.users.update-role');
+        Route::resource('/admin/roles', \App\Http\Controllers\Admin\RoleController::class)->names('admin.roles');
     });
 });
 

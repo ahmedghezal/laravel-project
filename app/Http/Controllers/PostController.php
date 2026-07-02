@@ -15,7 +15,31 @@ class PostController extends Controller
             ->latest()
             ->paginate(6);
 
-        return view('posts.index', compact('posts'));
+        $groupedPosts = [];
+        $today = now()->startOfDay();
+        $yesterday = now()->subDay()->startOfDay();
+        $weekAgo = now()->subWeek()->startOfDay();
+        $monthAgo = now()->subMonth()->startOfDay();
+
+        foreach ($posts as $post) {
+            $date = $post->created_at->startOfDay();
+
+            if ($date->greaterThanOrEqualTo($today)) {
+                $group = 'Today';
+            } elseif ($date->greaterThanOrEqualTo($yesterday)) {
+                $group = 'Yesterday';
+            } elseif ($date->greaterThanOrEqualTo($weekAgo)) {
+                $group = 'This Week';
+            } elseif ($date->greaterThanOrEqualTo($monthAgo)) {
+                $group = 'This Month';
+            } else {
+                $group = 'Older';
+            }
+
+            $groupedPosts[$group][] = $post;
+        }
+
+        return view('posts.index', compact('posts', 'groupedPosts'));
     }
 
     public function create(): View
@@ -86,5 +110,29 @@ class PostController extends Controller
         $post->delete();
 
         return to_route('posts.index')->with('status', 'Post deleted successfully.');
+    }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'post_ids' => ['required', 'array'],
+            'post_ids.*' => ['exists:posts,id'],
+        ]);
+
+        $postIds = $request->post_ids;
+
+        foreach ($postIds as $postId) {
+            $post = Post::findOrFail($postId);
+            
+            abort_unless(
+                (request()->user()->id === $post->user_id && request()->user()->can('delete own posts'))
+                    || request()->user()->can('delete any posts'),
+                403,
+            );
+            
+            $post->delete();
+        }
+
+        return to_route('posts.index')->with('status', 'Posts deleted successfully.');
     }
 }
