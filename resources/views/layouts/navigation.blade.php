@@ -1,7 +1,6 @@
 <nav x-data="{ open: false, mobileMenuOpen: false }" class="bg-slate-900/80 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
-            <!-- Logo & Left Nav -->
             <div class="flex items-center gap-8">
                 <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group">
                     <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -42,9 +41,9 @@
                 </div>
             </div>
 
-            <!-- Right Side -->
+      
             <div class="flex items-center gap-4">
-                <!-- User Dropdown -->
+          
                 <div class="hidden sm:flex sm:items-center">
                     <x-dropdown align="right" width="64">
                         <x-slot name="trigger">
@@ -103,7 +102,7 @@
                     </x-dropdown>
                 </div>
 
-                <!-- Mobile Menu Button -->
+               
                 <div class="-me-2 flex items-center sm:hidden">
                     <button @click="mobileMenuOpen = ! mobileMenuOpen" class="inline-flex items-center justify-center p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-300">
                         <svg :class="{'hidden': mobileMenuOpen, 'inline-flex': ! mobileMenuOpen }" class="w-6 h-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -118,7 +117,7 @@
         </div>
     </div>
 
-    <!-- Mobile Menu -->
+    
     <div x-show="mobileMenuOpen" x-transition x-cloak class="sm:hidden border-t border-white/10">
         <div class="pt-4 pb-6 space-y-1 px-4">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
