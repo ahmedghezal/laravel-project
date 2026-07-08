@@ -56,7 +56,12 @@ class PostController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'body' => ['required', 'string', 'min:10'],
+            'photo' => ['nullable', 'image', 'max:2048'],
         ]);
+
+        if ($request->hasFile('photo')) {
+            $validated['photo'] = $request->file('photo')->store('posts', 'public');
+        }
 
         $post = $request->user()->posts()->create($validated);
 
@@ -92,7 +97,15 @@ class PostController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'body' => ['required', 'string', 'min:10'],
+            'photo' => ['nullable', 'image', 'max:2048'],
         ]);
+
+        if ($request->hasFile('photo')) {
+            if ($post->photo) {
+                \Storage::disk('public')->delete($post->photo);
+            }
+            $validated['photo'] = $request->file('photo')->store('posts', 'public');
+        }
 
         $post->update($validated);
 
@@ -106,6 +119,10 @@ class PostController extends Controller
                 || request()->user()->can('delete any posts'),
             403,
         );
+
+        if ($post->photo) {
+            \Storage::disk('public')->delete($post->photo);
+        }
 
         $post->delete();
 
@@ -129,6 +146,10 @@ class PostController extends Controller
                     || request()->user()->can('delete any posts'),
                 403,
             );
+            
+            if ($post->photo) {
+                \Storage::disk('public')->delete($post->photo);
+            }
             
             $post->delete();
         }

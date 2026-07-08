@@ -20,6 +20,12 @@
                     <span>{{ $post->created_at->format('M d, Y h:i A') }}</span>
                 </div>
 
+                @if ($post->photo)
+                    <div class="mt-6 rounded-xl overflow-hidden border border-gray-200">
+                        <img src="{{ asset('storage/' . $post->photo) }}" alt="{{ $post->title }}" class="w-full max-h-96 object-cover">
+                    </div>
+                @endif
+
                 <div class="mt-6 whitespace-pre-line text-base leading-7 text-gray-700">{{ $post->body }}</div>
 
                 @if ((auth()->id() === $post->user_id && (auth()->user()->can('edit own posts') || auth()->user()->can('delete own posts'))) || auth()->user()->can('edit any posts') || auth()->user()->can('delete any posts'))

@@ -100,6 +100,12 @@
                                             </span>
                                         </div>
 
+                                        @if ($post->photo)
+                                            <div class="mb-4 rounded-xl overflow-hidden border border-white/10">
+                                                <img src="{{ asset('storage/' . $post->photo) }}" alt="{{ $post->title }}" class="w-full h-48 object-cover">
+                                            </div>
+                                        @endif
+
                                         <p class="mt-2 flex-1 text-sm leading-6 text-slate-400">
                                             {{ \Illuminate\Support\Str::limit($post->body, 180) }}
                                         </p>
